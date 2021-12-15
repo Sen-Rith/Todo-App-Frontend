@@ -17,6 +17,9 @@
 					v-on:delete="deleteList"
 					v-on:edit="editList"
 					v-on:changeTaskList="changeTaskList"
+					v-on:deleteTask="deleteTask"
+					v-on:editTask="editTask"
+					v-on:addTask="addTask"
 				/>
 			</draggable>
 			<v-card flat tile>
@@ -135,12 +138,7 @@ export default {
 			this.lists.forEach(async (i) => {
 				if (i.title == payload[1]) {
 					try {
-						await axios.patch(
-							`http://localhost:3000/update/${payload[0]}/${i.id}`
-						);
-						this.lists = (
-							await axios.get("http://localhost:3000/allList")
-						).data;
+						await this.revoke();
 						this.reload += 1;
 					} catch (error) {
 						alert("Error");
@@ -155,6 +153,47 @@ export default {
 					}
 				}
 			});
+		},
+		async deleteTask(taskId) {
+			try {
+				await axios.delete(`http://localhost:3000/task/${taskId}`);
+				await this.revoke();
+			} catch (error) {
+				alert("Error");
+			}
+		},
+		async editTask(payload) {
+			const taskId = payload[0];
+			const data = payload[1];
+			try {
+				await axios.patch(`http://localhost:3000/task/${taskId}`, data);
+				await this.revoke();
+			} catch (error) {
+				alert("Error");
+			}
+		},
+		async addTask(payload) {
+			const listId = payload[0]
+			const newTask = payload[1]
+			try {
+				const res = (
+					await axios.post(
+						`http://localhost:3000/task/${listId}`,
+						newTask
+					)
+				).data;
+				if (res == "Invalid input") {
+					alert("Invalid input");
+				}
+				await this.revoke()
+			} catch (error) {
+				alert("Error");
+			}
+		},
+		async revoke() {
+			this.lists = (
+				await axios.get("http://localhost:3000/allList")
+			).data;
 		},
 	},
 };

@@ -112,23 +112,8 @@ export default {
 			this.$emit("delete", this.listId);
 		},
 		async addTaskToList() {
-			try {
-				this.dialog2 = false;
-				const res = (
-					await axios.post(
-						`http://localhost:3000/task/${this.listId}`,
-						this.newTask
-					)
-				).data;
-				if (res == "Invalid input") {
-					alert("Invalid input");
-				}
-				this.tasks = (
-					await axios.get(`http://localhost:3000/task/${this.listId}`)
-				).data;
-			} catch (error) {
-				alert("Error");
-			}
+			this.dialog2 = false;
+			this.$emit("addTask", [this.listId, this.newTask]);
 		},
 		async completeTask(payload) {
 			const taskId = payload[0];
@@ -142,26 +127,10 @@ export default {
 			}
 		},
 		async editTask(payload) {
-			const taskId = payload[0];
-			const data = payload[1];
-			try {
-				await axios.patch(`http://localhost:3000/task/${taskId}`, data);
-				this.tasks = (
-					await axios.get(`http://localhost:3000/task/${this.listId}`)
-				).data;
-			} catch (error) {
-				alert("Error");
-			}
+			this.$emit("editTask", payload);
 		},
 		async deleteTask(taskId) {
-			try {
-				await axios.delete(`http://localhost:3000/task/${taskId}`);
-				this.tasks = (
-					await axios.get(`http://localhost:3000/task/${this.listId}`)
-				).data;
-			} catch (error) {
-				alert("Error");
-			}
+			this.$emit("deleteTask", taskId);
 		},
 		async changeTaskList(payload) {
 			this.$emit("changeTaskList", payload);
