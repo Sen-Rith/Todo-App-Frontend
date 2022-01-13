@@ -50,9 +50,7 @@
 						label="Description"
 						required
 					></v-text-field>
-					<v-btn color="success" @click="addTaskToList">
-						Add task
-					</v-btn>
+					<v-btn color="success" @click="addTask"> Add task </v-btn>
 				</v-form>
 			</v-card>
 		</v-dialog>
@@ -80,57 +78,43 @@
 <script>
 import Task from "./Task.vue";
 import draggable from "vuedraggable";
+import list from "../composables/list";
 
 export default {
 	name: "List",
-	props: ["title", "listId", "lists", "tasks"],
-	data() {
-		return {
-			newTitle: this.title,
-			dialog: false,
-			dialog2: false,
-			newTask: {
-				title: "",
-				description: "",
-			},
-		};
-	},
 	components: {
 		Task,
 		draggable,
 	},
-	methods: {
-		async editList() {
-			this.dialog = false;
-			this.$emit("edit", [this.newTitle, this.listId]);
-		},
-		async deleteList() {
-			this.dialog = false;
-			this.$emit("delete", this.listId);
-		},
-		async addTaskToList() {
-			this.dialog2 = false;
-			this.$emit("addTask", [this.listId, this.newTask]);
-		},
-		async deleteTask(taskId) {
-			this.$emit("deleteTask", taskId);
-		},
-		async updateTask(payload) {
-			this.$emit("updateTask", payload);
-		},
-		onUnchoose(evt) {
-			this.$emit("updateTask", [
-				evt.item.id,
-				{ listId: parseInt(evt.to.id) },
-			]);
-		},
+	props: ["title", "listId", "lists", "tasks"],
+
+	setup(props) {
+		const {
+			newTitle,
+			dialog,
+			dialog2,
+			newTask,
+			editList,
+			deleteList,
+			addTask,
+			deleteTask,
+			updateTask,
+			onUnchoose,
+		} = list(props);
+		return {
+			newTitle,
+			dialog,
+			dialog2,
+			newTask,
+			editList,
+			deleteList,
+			addTask,
+			deleteTask,
+			updateTask,
+			onUnchoose,
+		};
 	},
 	watch: {
-		dialog: function (dialog) {
-			if (!dialog) {
-				this.newTitle = this.title;
-			}
-		},
 		title: function (title) {
 			this.newTitle = title;
 		},

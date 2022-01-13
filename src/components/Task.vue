@@ -9,7 +9,7 @@
 				v-bind:id="taskId"
 			>
 				<v-checkbox
-					@click.prevent="complete"
+					@click.prevent="completeTask"
 					v-model="isComplete"
 					class="my-2 ml-2"
 					color="white"
@@ -41,7 +41,7 @@
 					label="Description"
 					required
 				></v-text-field>
-				<v-btn color="success" @click="editTask" class="mr-2">
+				<v-btn color="success" @click="updateTask" class="mr-2">
 					Edit
 					<v-icon> mdi-pencil </v-icon>
 				</v-btn>
@@ -62,43 +62,33 @@
 </template>
 
 <script>
+import task from "../composables/task";
 export default {
 	name: "Task",
 	props: ["taskId", "title", "description", "completed"],
-	data() {
+	setup(props) {
+		const {
+			isComplete,
+			newTitle,
+			newDescription,
+			dialog,
+			newList,
+			completeTask,
+			deleteTask,
+			updateTask,
+			changeTaskList,
+		} = task(props);
 		return {
-			isComplete: this.completed,
-			newTitle: this.title,
-			newDescription: this.description,
-			dialog: false,
-			newList: null,
+			isComplete,
+			newTitle,
+			newDescription,
+			dialog,
+			newList,
+			completeTask,
+			deleteTask,
+			updateTask,
+			changeTaskList,
 		};
-	},
-	methods: {
-		complete() {
-			this.$emit("updateTask", [
-				this.taskId,
-				{ completed: this.isComplete },
-			]);
-		},
-		deleteTask() {
-			this.dialog = false;
-			this.$emit("deleted", this.taskId);
-		},
-		editTask() {
-			this.dialog = false;
-			this.$emit("updateTask", [
-				this.taskId,
-				{
-					title: this.newTitle,
-					description: this.newDescription,
-				},
-			]);
-		},
-		changeTaskList() {
-			this.dialog = false;
-			this.$emit("updateTask", [this.taskId, { listId: this.newList }]);
-		},
 	},
 };
 </script>

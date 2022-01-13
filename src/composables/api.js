@@ -1,14 +1,14 @@
 import { useApolloClient } from "@vue/apollo-composable";
 import { onMounted, ref } from "@vue/composition-api";
 import {
-	ALL_LIST_QUERY,
-	ADD_LIST_QUERY,
-	DELETE_LIST_QUERY,
-	UPDATE_LIST_QUERY,
-	ADD_TASK_QUERY,
-	UPDATE_TASK_QUERY,
-	DELETE_TASK_QUERY,
-} from "./query";
+	ADD_LIST,
+	DELETE_LIST,
+	UPDATE_LIST,
+	ADD_TASK,
+	UPDATE_TASK,
+	DELETE_TASK,
+} from "../graphql/mutation";
+import { ALL_LIST } from "../graphql/queries";
 
 export default function api() {
 	const apolloClient = useApolloClient().client;
@@ -18,7 +18,7 @@ export default function api() {
 	async function getAllList() {
 		let res = (
 			await apolloClient.query({
-				query: ALL_LIST_QUERY,
+				query: ALL_LIST,
 				fetchPolicy: "network-only",
 			})
 		).data.lists;
@@ -27,7 +27,7 @@ export default function api() {
 	async function addList() {
 		dialog.value = false;
 		await apolloClient.mutate({
-			mutation: ADD_LIST_QUERY,
+			mutation: ADD_LIST,
 			variables: {
 				input: {
 					title: title.value,
@@ -39,7 +39,7 @@ export default function api() {
 	}
 	async function deleteList(id) {
 		await apolloClient.mutate({
-			mutation: DELETE_LIST_QUERY,
+			mutation: DELETE_LIST,
 			variables: {
 				deleteListId: parseInt(id),
 			},
@@ -48,7 +48,7 @@ export default function api() {
 	}
 	async function updateList(payload) {
 		await apolloClient.mutate({
-			mutation: UPDATE_LIST_QUERY,
+			mutation: UPDATE_LIST,
 			variables: {
 				input: {
 					title: payload[0],
@@ -60,7 +60,7 @@ export default function api() {
 	}
 	async function addTask(payload) {
 		await apolloClient.mutate({
-			mutation: ADD_TASK_QUERY,
+			mutation: ADD_TASK,
 			variables: {
 				input: {
 					listId: parseInt(payload[0]),
@@ -77,7 +77,7 @@ export default function api() {
 			}
 		});
 		await apolloClient.mutate({
-			mutation: UPDATE_TASK_QUERY,
+			mutation: UPDATE_TASK,
 			variables: {
 				input: {
 					id: parseInt(payload[0]),
@@ -89,7 +89,7 @@ export default function api() {
 	}
 	async function deleteTask(id) {
 		await apolloClient.mutate({
-			mutation: DELETE_TASK_QUERY,
+			mutation: DELETE_TASK,
 			variables: {
 				deleteTaskId: parseInt(id),
 			},

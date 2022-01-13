@@ -9,7 +9,6 @@ import ApolloClient from "apollo-boost";
 Vue.config.productionTip = false;
 Vue.use(vueCompositionApi);
 const apolloClient = new ApolloClient({
-	connectToDevTools: true,
 	uri: "http://localhost:4000/graphql",
 });
 
