@@ -76,7 +76,7 @@ export default {
 	},
 	methods: {
 		complete() {
-			this.$emit("completed", [this.taskId, this.isComplete]);
+			this.$emit("updateTask", [this.taskId, { completed: this.isComplete}]);
 		},
 		deleteTask() {
 			this.dialog = false;
@@ -84,7 +84,7 @@ export default {
 		},
 		editTask() {
 			this.dialog = false;
-			this.$emit("edit", [
+			this.$emit("updateTask", [
 				this.taskId,
 				{
 					title: this.newTitle,
@@ -94,7 +94,7 @@ export default {
 		},
 		changeTaskList() {
 			this.dialog = false;
-			this.$emit("changeTaskList", [this.taskId, this.newList]);
+			this.$emit("updateTask", [this.taskId, {listId: this.newList}]);
 		},
 	},
 };

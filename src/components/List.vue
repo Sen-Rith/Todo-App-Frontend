@@ -70,17 +70,14 @@
 				:description="task.description"
 				:taskId="task.id"
 				:completed="task.completed"
-				v-on:completed="completeTask"
-				v-on:edit="editTask"
+				v-on:updateTask="updateTask"
 				v-on:deleted="deleteTask"
-				v-on:changeTaskList="changeTaskList"
 			/>
 		</draggable>
 	</v-card>
 </template>
 
 <script>
-import axios from "axios";
 import Task from "./Task.vue";
 import draggable from "vuedraggable";
 
@@ -115,28 +112,14 @@ export default {
 			this.dialog2 = false;
 			this.$emit("addTask", [this.listId, this.newTask]);
 		},
-		async completeTask(payload) {
-			const taskId = payload[0];
-			const completed = payload[1];
-			try {
-				await axios.patch(`http://localhost:3000/task/${taskId}`, {
-					completed: completed,
-				});
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async editTask(payload) {
-			this.$emit("editTask", payload);
-		},
 		async deleteTask(taskId) {
 			this.$emit("deleteTask", taskId);
 		},
-		async changeTaskList(payload) {
-			this.$emit("changeTaskList", payload);
+		async updateTask(payload) {
+			this.$emit("updateTask", payload);
 		},
 		onUnchoose(evt) {
-			this.$emit("changeTaskList", [evt.item.id, evt.to.id]);
+			this.$emit("updateTask", [evt.item.id, {listId: parseInt(evt.to.id)}]);
 		},
 	},
 	watch: {

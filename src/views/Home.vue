@@ -1,6 +1,6 @@
 <template>
 	<div class="home">
-		<v-card flat tile class="d-flex justify-start" :key="reload">
+		<v-card flat tile class="d-flex justify-start">
 			<draggable
 				:list="lists"
 				group="lists"
@@ -15,10 +15,9 @@
 					:tasks="list.tasks"
 					:list="lists"
 					v-on:delete="deleteList"
-					v-on:edit="editList"
-					v-on:changeTaskList="changeTaskList"
+					v-on:edit="updateList"
 					v-on:deleteTask="deleteTask"
-					v-on:editTask="editTask"
+					v-on:updateTask="updateTask"
 					v-on:addTask="addTask"
 				/>
 			</draggable>
@@ -38,7 +37,7 @@
 						</v-btn>
 					</template>
 					<v-card class="pa-2">
-						<v-form @submit.prevent="addList">
+						<v-form @submit.prevent="addList(title)">
 							<v-text-field
 								v-model="title"
 								label="Title"
@@ -53,148 +52,41 @@
 </template>
 
 <script>
-import axios from "axios";
 import List from "../components/List.vue";
 import draggable from "vuedraggable";
+import api from "../composables/api";
 
 export default {
 	name: "Home",
-	data() {
-		return {
-			lists: null,
-			title: "",
-			dialog: false,
-			reload: 0,
-		};
-	},
 	components: {
 		List,
 		draggable,
 	},
-	async mounted() {
-		try {
-			this.lists = (
-				await axios.get("http://localhost:3000/allList")
-			).data;
-		} catch (error) {
-			console.log(error.message);
-		}
-	},
-	methods: {
-		async addList() {
-			this.dialog = false;
-			try {
-				const res = (
-					await axios.post("http://localhost:3000/list", {
-						title: this.title,
-					})
-				).data;
-				if (res == "Invalid") {
-					this.title = "";
-					alert("Duplicate list");
-				} else if (res == "No input") {
-					alert("No input");
-				} else {
-					this.lists = (
-						await axios.get("http://localhost:3000/allList")
-					).data;
-					this.title = "";
-				}
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async deleteList(listId) {
-			try {
-				await axios.delete(`http://localhost:3000/list/${listId}`);
-				this.lists = (
-					await axios.get("http://localhost:3000/allList")
-				).data;
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async editList(payload) {
-			const newTitle = payload[0];
-			const listId = payload[1];
-			try {
-				const res = (
-					await axios.patch(`http://localhost:3000/list/${listId}`, {
-						title: newTitle,
-					})
-				).data;
-				if (res == "Invalid") {
-					alert("Duplicate list");
-				} else {
-					this.lists = (
-						await axios.get("http://localhost:3000/allList")
-					).data;
-				}
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async changeTaskList(payload) {
-			this.lists.forEach(async (i) => {
-				if (i.title == payload[1]) {
-					try {
-						await this.revoke();
-						this.reload += 1;
-					} catch (error) {
-						alert("Error");
-					}
-				} else {
-					try {
-						await axios.patch(
-							`http://localhost:3000/update/${payload[0]}/${payload[1]}`
-						);
-					} catch (error) {
-						alert("Error");
-					}
-				}
-			});
-		},
-		async deleteTask(taskId) {
-			try {
-				await axios.delete(`http://localhost:3000/task/${taskId}`);
-				await this.revoke();
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async editTask(payload) {
-			const taskId = payload[0];
-			const data = payload[1];
-			try {
-				await axios.patch(`http://localhost:3000/task/${taskId}`, data);
-				await this.revoke();
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async addTask(payload) {
-			const listId = payload[0]
-			const newTask = payload[1]
-			try {
-				const res = (
-					await axios.post(
-						`http://localhost:3000/task/${listId}`,
-						newTask
-					)
-				).data;
-				if (res == "Invalid input") {
-					alert("Invalid input");
-				}
-				await this.revoke()
-			} catch (error) {
-				alert("Error");
-			}
-		},
-		async revoke() {
-			this.lists = (
-				await axios.get("http://localhost:3000/allList")
-			).data;
-		},
+	setup() {
+		const {
+			lists,
+			dialog,
+			title,
+			getAllList,
+			addList,
+			deleteList,
+			updateList,
+			addTask,
+			updateTask,
+			deleteTask
+		} = api();
+		return {
+			lists,
+			dialog,
+			title,
+			addList,
+			getAllList,
+			deleteList,
+			updateList,
+			addTask,
+			updateTask,
+			deleteTask,
+		};
 	},
 };
 </script>
