@@ -1,6 +1,14 @@
 import { useApolloClient } from "@vue/apollo-composable";
 import { onMounted, ref } from "@vue/composition-api";
-import { ALL_LIST_QUERY, ADD_LIST_QUERY, DELETE_LIST_QUERY, UPDATE_LIST_QUERY, ADD_TASK_QUERY, UPDATE_TASK_QUERY, DELETE_TASK_QUERY } from "./query";
+import {
+	ALL_LIST_QUERY,
+	ADD_LIST_QUERY,
+	DELETE_LIST_QUERY,
+	UPDATE_LIST_QUERY,
+	ADD_TASK_QUERY,
+	UPDATE_TASK_QUERY,
+	DELETE_TASK_QUERY,
+} from "./query";
 
 export default function api() {
 	const apolloClient = useApolloClient().client;
@@ -100,6 +108,6 @@ export default function api() {
 		updateList,
 		addTask,
 		updateTask,
-		deleteTask
+		deleteTask,
 	};
 }

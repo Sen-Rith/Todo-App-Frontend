@@ -119,7 +119,10 @@ export default {
 			this.$emit("updateTask", payload);
 		},
 		onUnchoose(evt) {
-			this.$emit("updateTask", [evt.item.id, {listId: parseInt(evt.to.id)}]);
+			this.$emit("updateTask", [
+				evt.item.id,
+				{ listId: parseInt(evt.to.id) },
+			]);
 		},
 	},
 	watch: {

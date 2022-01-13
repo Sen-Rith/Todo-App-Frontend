@@ -73,7 +73,7 @@ export default {
 			updateList,
 			addTask,
 			updateTask,
-			deleteTask
+			deleteTask,
 		} = api();
 		return {
 			lists,
