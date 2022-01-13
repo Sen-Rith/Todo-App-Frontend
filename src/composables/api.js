@@ -1,4 +1,4 @@
-import { useApolloClient } from "@vue/apollo-composable";
+import { useApolloClient, useSubscription } from "@vue/apollo-composable";
 import { onMounted, ref } from "@vue/composition-api";
 import {
 	ADD_LIST,
@@ -9,6 +9,7 @@ import {
 	DELETE_TASK,
 } from "../graphql/mutation";
 import { ALL_LIST } from "../graphql/queries";
+import { LIST_UPDATED } from "../graphql/subscription";
 
 export default function api() {
 	const apolloClient = useApolloClient().client;
@@ -35,7 +36,6 @@ export default function api() {
 			},
 		});
 		title.value = "";
-		getAllList();
 	}
 	async function deleteList(id) {
 		await apolloClient.mutate({
@@ -44,7 +44,6 @@ export default function api() {
 				deleteListId: parseInt(id),
 			},
 		});
-		getAllList();
 	}
 	async function updateList(payload) {
 		await apolloClient.mutate({
@@ -56,7 +55,6 @@ export default function api() {
 				},
 			},
 		});
-		getAllList();
 	}
 	async function addTask(payload) {
 		await apolloClient.mutate({
@@ -68,7 +66,6 @@ export default function api() {
 				},
 			},
 		});
-		getAllList();
 	}
 	async function updateTask(payload) {
 		lists.value.forEach((i) => {
@@ -85,7 +82,6 @@ export default function api() {
 				},
 			},
 		});
-		getAllList();
 	}
 	async function deleteTask(id) {
 		await apolloClient.mutate({
@@ -94,9 +90,11 @@ export default function api() {
 				deleteTaskId: parseInt(id),
 			},
 		});
-		getAllList();
 	}
-
+	const { onResult } = useSubscription(LIST_UPDATED);
+	onResult(() => {
+		getAllList;
+	});
 	onMounted(getAllList);
 	return {
 		dialog,
